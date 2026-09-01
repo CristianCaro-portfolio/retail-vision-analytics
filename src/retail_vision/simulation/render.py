@@ -171,8 +171,8 @@ def draw_dashboard(
         y = y0 + 24 + i * 22
         cv2.circle(board, (x2 + 6, y - 5), 5, EMPLOYEE_COLOR, -1)
         seated = f"seated {e['seated_s']:.0f}s" if e["seated_s"] else ""
-        _text(board, f"{e['employee_id']}  {e['cameras']} cams  {e['zones']} zones", (x2 + 20, y))
-        _text(board, seated, (x2 + 215, y), 0.46, MUTED)
+        row = f"{e['employee_id']}  {e['cameras']} cams  {e['zones']} zones  {seated}"
+        _text(board, row, (x2 + 20, y), 0.42)
     if eval_report:
         y = y0 + 92
         _text(board, "IDENTITY QUALITY vs GROUND TRUTH", (x2, y), 0.5)
