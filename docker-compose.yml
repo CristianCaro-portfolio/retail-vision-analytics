@@ -1,0 +1,24 @@
+services:
+  cloud-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cloud
+    ports:
+      - "8000:8000"
+    volumes:
+      - rva-data:/data
+
+  edge-store-001:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.edge
+    depends_on:
+      - cloud-api
+    volumes:
+      - ./configs:/app/configs:ro
+      - rva-data:/data
+    # Same simulation as `rva simulate`, but events are POSTed to the cloud API.
+    command: ["simulate", "--config", "configs/store_demo_http.yaml", "--frames", "600"]
+
+volumes:
+  rva-data:
