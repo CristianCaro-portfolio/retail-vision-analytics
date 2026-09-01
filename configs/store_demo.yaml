@@ -1,0 +1,65 @@
+# Demo store used by `rva simulate`, the tests and the docker-compose demo.
+# Coordinates are pixels in each camera's own frame (640x480).
+# World layout: cam-01 viewport = world (0,240)-(640,720); cam-02 = (480,120)-(1120,600).
+store_id: store-001
+
+cameras:
+  - camera_id: cam-01
+    source: synthetic
+    width: 640
+    height: 480
+    fps: 10
+    zones:
+      - name: entrance
+        kind: entrance
+        polygon: [[0, 0], [120, 0], [120, 480], [0, 480]]
+      - name: shelf-A
+        kind: shelf
+        polygon: [[200, 40], [320, 40], [320, 140], [200, 140]]
+      - name: aisle-1
+        kind: area
+        polygon: [[120, 300], [640, 300], [640, 480], [120, 480]]
+
+  - camera_id: cam-02
+    source: synthetic
+    width: 640
+    height: 480
+    fps: 10
+    zones:
+      - name: shelf-B
+        kind: shelf
+        polygon: [[400, 180], [540, 180], [540, 290], [400, 290]]
+      - name: pos-seat
+        kind: seat
+        polygon: [[560, 320], [640, 320], [640, 440], [560, 440]]
+      - name: aisle-2
+        kind: area
+        polygon: [[0, 400], [640, 400], [640, 480], [0, 480]]
+
+detector:
+  backend: mock          # yolo | onnx in real deployments
+  confidence_threshold: 0.4
+
+tracker:
+  max_age: 15
+  min_hits: 2
+  iou_threshold: 0.3
+
+reid:
+  backend: histogram     # onnx (OSNet export) in real deployments
+  match_threshold: 0.90
+  review_threshold: 0.75
+  gallery_path: data/employee_gallery.npz
+  identity_ttl_seconds: 20
+  max_embeddings_per_identity: 20
+
+events:
+  zone_enter_frames: 2
+  zone_exit_frames: 4
+  min_dwell_seconds: 1.0
+  interaction_frames: 6
+  dedup_window_seconds: 5
+
+sink:
+  kind: jsonl
+  path: data/events.jsonl
